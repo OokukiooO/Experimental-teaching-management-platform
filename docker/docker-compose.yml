@@ -1,0 +1,22 @@
+# host:container
+services:
+  easyai-web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: easypus-docker.pkg.coding.net/aiweb/aiweb/web:lastest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data/resources:/app/public/resources
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    volumes:
+      - ./data/db:/data/db
+    ports:
+      - "27072:27017"
+    command: >
+      mongod
+      --port=27017
+
+  
