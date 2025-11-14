@@ -14,7 +14,7 @@ export default function LoginModal({ visible, onSuccess }: Props) {
 
   const loadCaptcha = async () => {
   setCaptchaReady(false);
-  const res = await fetch('/api/auth/captcha');
+  const res = await fetch(`/api/auth/captcha?t=${Date.now()}`, { cache: 'no-store' });
   const data = await res.json();
   setCaptchaId(data.id);
   setCaptchaSvg(data.svg);
