@@ -1,11 +1,11 @@
 "use client";
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Input, Select, Form, Button, Alert } from 'antd';
 import HlsPlayer from '../HlsPlayer';
 import { detectStreamType, normalizeUrl } from '@/lib/streamHelper';
 
-export default function LiveDemo(){
+function LiveDemoInner(){
   const sp = useSearchParams();
   const [url, setUrl] = useState(sp.get('url') || '');
   const [type, setType] = useState<string>(sp.get('type') || 'auto');
@@ -39,4 +39,12 @@ export default function LiveDemo(){
       </div>
     </div>
   )
+}
+
+export default function LiveDemo(){
+  return (
+    <Suspense fallback={<div/>}>
+      <LiveDemoInner />
+    </Suspense>
+  );
 }

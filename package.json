@@ -6,26 +6,25 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "browserslist:update": "npx update-browserslist-db@latest --update-db"
   },
   "dependencies": {
     "@ant-design/charts": "^2.1.1",
     "@ant-design/nextjs-registry": "^1.0.0",
     "@ant-design/pro-components": "^2.7.1",
     "antd": "^5.17.0",
-    "loadash": "^1.0.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
-  "mongoose": "^8.3.4",
-  "bcryptjs": "^2.4.3",
-  "jsonwebtoken": "^9.0.2",
-  "@types/jsonwebtoken": "^9.0.6",
-  "@types/bcryptjs": "^2.4.6",
+    "mongoose": "^8.3.4",
     "next": "14.2.2",
     "react": "^18",
     "react-dom": "^18",
     "tailwind": "^4.0.0"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash": "^4.17.1",
     "@types/node": "20.16.11",
     "@types/react": "18.3.11",
