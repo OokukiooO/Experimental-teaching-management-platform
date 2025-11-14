@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { qfChat } from '@/lib/qianfan';
+import dbConnect from '@/lib/dbconn';
+
+// 确保数据库连接在首次导入时建立
+await dbConnect();
 
 export async function POST(req: NextRequest){
   try{

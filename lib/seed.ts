@@ -3,6 +3,7 @@ import Location from '@/models/location';
 import Task from '@/models/task';
 import Event from '@/models/event';
 import Camera from '@/models/camera';
+import AlgoNode from '@/models/algoNode';
 import { Types } from 'mongoose';
 
 export async function ensureDemoSeed() {
@@ -68,4 +69,16 @@ export async function ensureDemoSeed() {
   }
 
   return seeded;
+}
+
+export async function ensureAlgoSeed(){
+  if(!process.env.MONGODB_URI) return; // 无数据库直接跳过
+  await import('@/lib/dbconn');
+  const count = await AlgoNode.countDocuments();
+  if(count > 0) return;
+  await AlgoNode.insertMany([
+    { name:'GPU-Node-01', host:'10.0.0.11', apiBase:'http://10.0.0.11:8080', status:'online', version:'1.3.2', cpuUsage:32, memUsage:45, gpuName:'RTX 4060', gpuMemTotal:8192, gpuMemUsed:4096, connectedCameras:4, lastHeartbeatAt:new Date() },
+    { name:'Edge-Box-02', host:'10.0.0.12', apiBase:'http://10.0.0.12:8080', status:'degraded', version:'1.2.9', cpuUsage:78, memUsage:82, gpuName:'T4', gpuMemTotal:16384, gpuMemUsed:14000, connectedCameras:6, lastHeartbeatAt:new Date() },
+    { name:'CPU-Only-03', host:'10.0.0.13', status:'offline', version:'1.1.0', cpuUsage:0, memUsage:0, connectedCameras:0 },
+  ]);
 }

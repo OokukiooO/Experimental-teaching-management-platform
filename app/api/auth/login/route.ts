@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyCaptcha, authenticateCredentials, signToken, ensureDefaultAdmin } from '@/lib/auth';
-import '@/lib/dbconn';
+import dbConnect from '@/lib/dbconn';
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
@@ -26,6 +26,13 @@ export async function POST(req: Request) {
       return res;
     }
     return NextResponse.json({ error: '用户名或密码错误（开发模式）' }, { status: 401 });
+  }
+
+  // 显式建立数据库连接，避免 Mongoose buffering 超时
+  try {
+    await dbConnect();
+  } catch (e:any) {
+    return NextResponse.json({ error: '数据库连接失败', detail: e.message || String(e) }, { status: 500 });
   }
 
   await ensureDefaultAdmin();

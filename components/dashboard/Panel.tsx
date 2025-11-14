@@ -1,7 +1,11 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { Select, Spin } from 'antd';
-import { Line } from '@ant-design/plots';
+import dynamic from 'next/dynamic';
+
+// 动态导入图表组件，关闭 SSR，防止服务端执行时访问 document
+const LinePlot = dynamic(() => import('@ant-design/plots').then(m => m.Line), { ssr: false });
+
 import { getMetricsPayload } from '@/app/actions/metrics';
 
 interface PanelProps { defaultMetric: string; days?: number }
@@ -50,7 +54,7 @@ export default function Panel({ defaultMetric, days = 7 }: PanelProps){
         <span className="text-xs text-zinc-500">过去 {days} 天</span>
       </div>
       <div className="flex-1 min-h-[180px]">
-        {loading ? <div className="flex justify-center items-center h-full"><Spin /></div> : <Line {...config} />}
+        {loading ? <div className="flex justify-center items-center h-full"><Spin /></div> : <LinePlot {...config} />}
       </div>
     </div>
   )

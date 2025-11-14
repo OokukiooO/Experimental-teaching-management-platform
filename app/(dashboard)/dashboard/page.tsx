@@ -15,12 +15,14 @@ import Event from '@/models/event';
 import Task from '@/models/task';
 import Camera from '@/models/camera';
 import { ensureDemoSeed } from '@/lib/seed';
+import { ensureAlgoSeed } from '@/lib/seed';
 
 export default async function App() {
     let todayCount = '0', taskCount = '0', deviceCount = '0';
         try {
             if (process.env.MONGODB_URI) {
                 await ensureDemoSeed();
+                await ensureAlgoSeed();
                 await dbConnect();
                 const start = new Date(); start.setHours(0,0,0,0);
                 const end = new Date(); end.setHours(23,59,59,999);

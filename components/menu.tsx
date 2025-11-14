@@ -7,14 +7,11 @@
  * 
  */
 'use client';
-import React, { Children } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { VideoCameraOutlined, ExceptionOutlined, AreaChartOutlined, SettingOutlined, RobotOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Menu } from 'antd';
 import { usePathname } from 'next/navigation';
-// import _ from 'lodash';
-
-const { Header, Content, Sider } = Layout;
 
 const menuItem: MenuProps['items'] = [
     {
@@ -92,15 +89,57 @@ const menuItem: MenuProps['items'] = [
     }
 ]
 
+// 根据静态菜单结构生成 子 -> 父 映射
+function buildParentMap(items: MenuProps['items']){
+  const map: Record<string,string> = {};
+  items?.forEach(it => {
+    const parentKey = (it as any).key;
+    const children = (it as any).children as any[] | undefined;
+    if(children){
+      children.forEach(c => { map[c.key] = parentKey; });
+    }
+  });
+  return map;
+}
+
 const App: React.FC = () => {
-    // const activeItemId = menuItem?.find(itm => _.includes(usePathname(), itm!.key))?.key;
-    // console.log(activeItemId);
+    const pathname = usePathname();
+    const parentMap = useMemo(()=>buildParentMap(menuItem), []);
+    const [openKeys, setOpenKeys] = useState<string[]>([]);
+
+    // 初始化或路径变化时，只展开当前选中子项的父级（若存在）
+    useEffect(() => {
+      const parent = parentMap[pathname];
+      if(parent){
+        setOpenKeys([parent]);
+      } else {
+        // 若直接访问顶级路由或没有父级，关闭所有展开
+        setOpenKeys([]);
+      }
+    }, [pathname, parentMap]);
+
+    const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
+      // antd 传入所有展开的 keys，只保留最后一个，实现“单一展开”
+      const latest = keys[keys.length - 1];
+      setOpenKeys(latest ? [latest] : []);
+    };
+
+    const onSelect: MenuProps['onSelect'] = ({ key }) => {
+      const parent = parentMap[key];
+      if(parent){
+        setOpenKeys([parent]);
+      } else {
+        setOpenKeys([]);
+      }
+    };
 
     return (
         <Menu
             mode="inline"
-            defaultSelectedKeys={[usePathname()]}
-            defaultOpenKeys={[]}
+            selectedKeys={[pathname]}
+            openKeys={openKeys}
+            onOpenChange={onOpenChange}
+            onSelect={onSelect}
             style={{ height: '100%', borderRight: 0 }}
             items={menuItem}
         />

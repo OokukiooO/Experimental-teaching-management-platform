@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import type { NextRequest } from 'next/server';
+import dbConnect from '@/lib/dbconn';
 import User from '@/models/user';
 
 // In-memory captcha store (id -> text), clears after verification or TTL
@@ -73,7 +74,8 @@ export async function getUserFromRequest(req?: NextRequest): Promise<AuthUserPay
 
 // Ensure default admin user exists
 export async function ensureDefaultAdmin() {
-  await import('@/lib/dbconn');
+  // await import('@/lib/dbconn');
+  await dbConnect();
   const existing = await User.findOne({ name: 'admin' });
   if (existing) return existing;
   const passwordHash = await hashPassword('syjxb_GDUT');
@@ -90,7 +92,8 @@ setInterval(() => {
 }, 60 * 1000);
 
 export async function authenticateCredentials(name: string, password: string) {
-  await import('@/lib/dbconn');
+  // await import('@/lib/dbconn');
+  await dbConnect();
   const user = await User.findOne({ name });
   if (!user) return null;
   // prefer passwordHash; fallback to legacy pwd
