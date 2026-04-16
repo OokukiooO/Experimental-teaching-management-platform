@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   }
   // 无数据库时，提供内置 admin 账号
   if (!process.env.MONGODB_URI) {
-    if (username === 'admin' && password === 'syjxb_GDUT') {
+    if (username === 'admin' && password === 'admin123') {
       const token = signToken({ id: 'dev-admin', name: 'admin', role: 'admin' });
       const res = NextResponse.json({ user: { id: 'dev-admin', name: 'admin', role: 'admin' } });
       res.cookies.set('token', token, { httpOnly: true, sameSite: 'lax', maxAge: 15 * 24 * 3600, path: '/' });

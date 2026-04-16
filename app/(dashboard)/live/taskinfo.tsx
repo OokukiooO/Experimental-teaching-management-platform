@@ -6,11 +6,12 @@
  * @Description: 
  * 
  */
+"use client";
 import React from 'react';
-import { Badge, Descriptions, Button, DescriptionsProps } from 'antd';
+import { Badge, Descriptions, Button, DescriptionsProps, message } from 'antd';
 import { task } from '@/models/task';
 
-export default function Taskinfo({taskInfo}: {taskInfo: task}) {
+export default function Taskinfo({taskInfo}: {taskInfo: task & { cameraName?: string }}) {
     const items: DescriptionsProps['items'] = [
         {
             label: '运行状态',
@@ -25,30 +26,30 @@ export default function Taskinfo({taskInfo}: {taskInfo: task}) {
         },
         {
             label: '任务名称',
-            children: taskInfo.taskName,
+            children: taskInfo?.taskName || '未命名任务',
         },
         {
             label: '摄像头名称',
-            children: taskInfo.taskName,
+            children: taskInfo?.cameraName || taskInfo?.taskName || '未配置',
         },
         {
             label: '摄像头位置',
-            children: '柜台',
+            children: taskInfo?.locationName || '未配置',
         },
 
         {
             span: 2,
             label: '配置信息',
-            children: ''
+            children: taskInfo?.desc || '行为识别任务默认配置'
         },
         {
             span: 1,
             label: '操作',
-            children: <Button type="primary">查看配置</Button>,
+            children: <Button type="primary" onClick={() => message.info('已打开任务配置查看（演示）。')}>查看配置</Button>,
         }
     ];
 
 
 
-    return <Descriptions title="任务信息" bordered items={items} />
+    return <Descriptions title={<span className='text-slate-800 font-semibold'>任务信息</span>} bordered items={items} className='rounded-xl overflow-hidden' />
 }

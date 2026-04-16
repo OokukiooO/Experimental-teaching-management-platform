@@ -34,9 +34,9 @@ export default function CameraList({ initial }: { initial: any[] }){
   }, [autoProbe, items]);
 
   return (
-    <div className="bg-white rounded-lg border border-zinc-100 p-3">
+    <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-[0_10px_25px_rgba(15,23,42,0.06)]">
       <div className="flex items-center justify-between mb-2">
-        <div className="text-sm text-zinc-500">摄像头列表</div>
+        <div className="text-sm font-semibold text-slate-700">摄像头列表</div>
         <Tooltip title="每 8 秒探活列表中的所有摄像头，RTSP 在未启用 ffprobe 时会返回 unknown。">
           <div className="flex items-center gap-2 text-xs text-zinc-500">
             自动探活 <Switch size="small" checked={autoProbe} onChange={setAutoProbe} />
@@ -49,7 +49,7 @@ export default function CameraList({ initial }: { initial: any[] }){
         renderItem={(item:any)=>{
           const statusColor = item.status==='online'?'#16a34a':item.status==='offline'?'#ef4444':'#f59e0b';
           return (
-            <List.Item className={`${active===item._id?'bg-zinc-50':''} cursor-pointer rounded-md`} onClick={()=>{ setActive(item._id); window.dispatchEvent(new CustomEvent('camera:select',{ detail:item })) }}>
+            <List.Item className={`${active===item._id?'bg-blue-50/60':''} cursor-pointer rounded-lg px-2 transition-all hover:bg-slate-50`} onClick={()=>{ setActive(item._id); window.dispatchEvent(new CustomEvent('camera:select',{ detail:item })) }}>
               <List.Item.Meta
                 avatar={<Avatar style={{ background: '#eef2ff' }} icon={<VideoCameraOutlined style={{ color:'#6366f1' }} />} />}
                 title={<div className="flex items-center gap-2"><span className="font-medium">{item.name}</span><Badge color={statusColor} text={item.status||'unknown'} /></div>}

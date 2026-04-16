@@ -37,8 +37,9 @@ const menuItem: MenuProps['items'] = [
         icon: (<VideoCameraOutlined />),
         label: '在线预览',
         children: [
-            { key: '/live', label: (<a href="/live">在线预览（正在部署）</a>) },
+            { key: '/live', label: (<a href="/live">在线浏览（任务）</a>) },
             { key: '/live/demo', label: (<a href="/live/demo">在线预览 Demo</a>) },
+            { key: '/live/camera-simulation', label: (<a href="/live/camera-simulation">摄像头仿真调度</a>) },
         ]
     },
     {
@@ -140,7 +141,8 @@ const App: React.FC = () => {
             openKeys={openKeys}
             onOpenChange={onOpenChange}
             onSelect={onSelect}
-            style={{ height: '100%', borderRight: 0 }}
+            style={{ height: '100%', borderRight: 0, paddingTop: 6, fontSize: 14 }}
+            className='modern-side-menu'
             items={menuItem}
         />
     );

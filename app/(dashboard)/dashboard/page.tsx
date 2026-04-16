@@ -7,15 +7,13 @@
  * 
  */
 import React from 'react';
-import { Col, Row } from 'antd';
-import NumCard from '../../../components/numcard';
-import ChartGrid from '@/components/dashboard/ChartGrid';
 import dbConnect from '@/lib/dbconn';
 import Event from '@/models/event';
 import Task from '@/models/task';
 import Camera from '@/models/camera';
 import { ensureDemoSeed } from '@/lib/seed';
 import { ensureAlgoSeed } from '@/lib/seed';
+import DashboardSummary from './DashboardSummary';
 
 export default async function App() {
     let todayCount = '0', taskCount = '0', deviceCount = '0';
@@ -38,15 +36,5 @@ export default async function App() {
             todayCount = '12'; taskCount = '3'; deviceCount = '2';
         }
 
-    return (
-        <>
-            <Row gutter={20}>
-                <Col span={8}><NumCard name="当天事件数量" value={todayCount} color="#ea580c" icon='ExceptionOutlined' /></Col>
-                <Col span={8}><NumCard name="任务数量" value={taskCount} color="#0891b2" icon='ProductOutlined' /></Col>
-                <Col span={8}><NumCard name="设备数量" value={deviceCount} color="#059669" icon='VideoCameraOutlined' /></Col>
-            </Row>
-            <div className='h-8'></div>
-            <ChartGrid />
-        </>
-    );
+    return <DashboardSummary realCounts={{ todayCount, taskCount, deviceCount }} />;
 }

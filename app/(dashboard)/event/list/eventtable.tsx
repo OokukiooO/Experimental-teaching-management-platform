@@ -3,10 +3,11 @@ import dynamic from 'next/dynamic';
 const ProTable = dynamic<ProTableProps<event,any>>(() => import('@ant-design/pro-components').then(({ ProTable }) => ProTable), { ssr: false });
 import type { ProTableProps } from '@ant-design/pro-components';
 import { TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag } from 'antd';
-import { useRef } from 'react';
+import { message, Space, Tag } from 'antd';
+import { useEffect, useRef, useState } from 'react';
 import { event } from '@/models/event'
 import { task } from '@/models/task';
+import { mockEvents } from '@/lib/mockEventData';
 
 export const waitTimePromise = async (time: number = 100) => {
     return new Promise((resolve) => {
@@ -20,7 +21,7 @@ export const waitTime = async (time: number = 100) => {
     await waitTimePromise(time);
 };
 
-const columns: ProColumns<event>[] = [
+const columns: ProColumns<any>[] = [
     {
         dataIndex: 'index',
         valueType: 'index',
@@ -31,7 +32,7 @@ const columns: ProColumns<event>[] = [
         dataIndex: 'taskId',
         ellipsis: true,
         // @ts-ignore
-        render: (_, record) => <>{(record.taskId as task).taskName}</>,
+        render: (_, record) => <>{(record.taskId as task)?.taskName || '未命名任务'}</>,
     },
     {
         disable: true,
@@ -88,8 +89,10 @@ const columns: ProColumns<event>[] = [
                 <a href={`/event/${record._id}`} key="view">查看</a>,
                 <TableDropdown
                     key="actionGroup"
-                    // @ts-ignore
-                    onSelect={(key) => { key === 'handled' ? tohandled(record.id) : todelete(record.id) }}
+                    onSelect={(key) => {
+                        window.dispatchEvent(new CustomEvent('event:list:action', { detail: { id: record._id, action: key } }));
+                        action?.reload?.();
+                    }}
                     menus={[
                         { key: 'handled', name: '已处理' },
                         { key: 'delete', name: '删除' },
@@ -102,15 +105,76 @@ const columns: ProColumns<event>[] = [
 
 export default () => {
     const actionRef = useRef<ActionType>();
+    const [rows, setRows] = useState<any[]>([]);
+    const [ready, setReady] = useState(false);
+
+    const loadRows = async () => {
+        if (ready) return rows;
+        try {
+            const res = await fetch('/api/event');
+            const json = await res.json();
+            const remoteRows = json?.data?.events || [];
+            if (Array.isArray(remoteRows) && remoteRows.length) {
+                setRows(remoteRows);
+                setReady(true);
+                return remoteRows;
+            }
+        } catch {
+            // fallback to mock
+        }
+        setRows(mockEvents as any[]);
+        setReady(true);
+        return mockEvents as any[];
+    };
+
+    const applyAction = (list: any[], id: string, actionKey: string) => {
+        if (actionKey === 'handled') {
+            return list.map((it) => it._id === id ? { ...it, state: 'finish' } : it);
+        }
+        if (actionKey === 'delete') {
+            return list.filter((it) => it._id !== id);
+        }
+        return list;
+    };
+
+    useEffect(() => {
+        const onAction = (evt: any) => {
+            const id = evt?.detail?.id;
+            const actionKey = evt?.detail?.action;
+            if (!id || !actionKey) return;
+            setRows((prev) => {
+                const next = applyAction(prev, id, actionKey);
+                return next;
+            });
+            if (actionKey === 'handled') message.success('已标记为处理完成');
+            if (actionKey === 'delete') message.success('已删除该条记录');
+        };
+        window.addEventListener('event:list:action', onAction as EventListener);
+        return () => window.removeEventListener('event:list:action', onAction as EventListener);
+    }, []);
+
     return (
         <ProTable
+            className='pro-table-modern'
             columns={columns}
             actionRef={actionRef}
             cardBordered
             request={async (params, sort, filter) => {
-                let data = (await (await fetch('/api/event')).json()).data
-                return { data: data.events, total: data.total }
-                //modify
+                const current = (await loadRows()).slice();
+
+                if (filter?.state && Array.isArray(filter.state) && filter.state.length) {
+                    const states = filter.state as string[];
+                    current.splice(0, current.length, ...current.filter((it) => states.includes(it.state)));
+                }
+
+                const order = (sort as any)?.reportDate;
+                if (order === 'ascend') {
+                    current.sort((a, b) => new Date(a.reportDate).getTime() - new Date(b.reportDate).getTime());
+                } else if (order === 'descend') {
+                    current.sort((a, b) => new Date(b.reportDate).getTime() - new Date(a.reportDate).getTime());
+                }
+
+                return { data: current, total: current.length, success: true };
             }}
             // request={async (params, sort, filter) => {
             //     console.log(sort, filter);
@@ -131,7 +195,7 @@ export default () => {
                     // console.log('value: ', value);
                 },
             }}
-            rowKey="id"
+            rowKey="_id"
             search={{
                 labelWidth: 'auto',
             }}
@@ -158,6 +222,16 @@ export default () => {
             }}
             dateFormatter="string"
             headerTitle="事件清单"
+            toolBarRender={false}
+            onRow={(record) => ({
+                onDoubleClick: () => {
+                    location.href = `/event/${record._id}`;
+                }
+            })}
+            postData={(data) => {
+                if (!Array.isArray(data)) return data;
+                return data.map((it) => ({ ...it }));
+            }}
         />
     );
 };

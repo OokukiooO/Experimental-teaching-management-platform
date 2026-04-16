@@ -102,6 +102,7 @@ export default ({ showModal, setModalInfo, setModalMode }: { showModal: () => vo
     const actionRef = useRef<ActionType>();
     return (
         <ProTable
+            className='pro-table-modern'
             columns={columns}
             actionRef={actionRef}
             cardBordered

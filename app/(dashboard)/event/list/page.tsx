@@ -13,8 +13,14 @@ import Eventtable from './eventtable'
 export default function EventPage() {
 
     return (
-        <>
-            <Eventtable></Eventtable>
-        </>
+        <div className='space-y-4'>
+            <div className='ui-surface p-5'>
+                <h1 className='ui-title text-xl font-semibold text-slate-800'>事件清单</h1>
+                <p className='mt-1 text-sm text-slate-500'>支持状态筛选、时间排序、分页浏览、事件详情查看、标记处理与删除操作。</p>
+            </div>
+            <div className='ui-surface p-3'>
+                <Eventtable></Eventtable>
+            </div>
+        </div>
     )
 }

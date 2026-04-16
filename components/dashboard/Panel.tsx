@@ -8,7 +8,7 @@ const LinePlot = dynamic(() => import('@ant-design/plots').then(m => m.Line), { 
 
 import { getMetricsPayload } from '@/app/actions/metrics';
 
-interface PanelProps { defaultMetric: string; days?: number }
+interface PanelProps { defaultMetric: string; days?: number; useMock?: boolean }
 
 const metricOptions = [
   { value: 'event.countByDay', label: '事件数量(按日)' },
@@ -16,12 +16,41 @@ const metricOptions = [
   { value: 'task.total', label: '任务总数' }
 ]
 
-export default function Panel({ defaultMetric, days = 7 }: PanelProps){
+export default function Panel({ defaultMetric, days = 7, useMock = false }: PanelProps){
   const [metric, setMetric] = useState(defaultMetric);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
 
+  function getMockData(curMetric: string, curDays: number){
+    if(curMetric === 'event.countByDay'){
+      const arr = Array.from({ length: curDays }).map((_, idx)=>({
+        name: `D-${curDays-idx}`,
+        value: [22, 27, 25, 31, 34, 29, 36, 33, 40, 38][idx % 10]
+      }));
+      return arr;
+    }
+    if(curMetric === 'event.countByLabel'){
+      return [
+        { name: '未佩戴护目镜', value: 15 },
+        { name: '人员聚集', value: 11 },
+        { name: '离岗', value: 8 },
+        { name: '区域闯入', value: 6 },
+      ];
+    }
+    return [
+      { name: 'tasks', value: 16 },
+      { name: 'running', value: 12 },
+      { name: 'paused', value: 3 },
+      { name: 'failed', value: 1 },
+    ];
+  }
+
   async function load(){
+    if(useMock){
+      setData(getMockData(metric, days));
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const payload = await getMetricsPayload([metric], days);
@@ -38,7 +67,7 @@ export default function Panel({ defaultMetric, days = 7 }: PanelProps){
     } finally { setLoading(false); }
   }
 
-  useEffect(()=>{ load(); }, [metric, days]);
+  useEffect(()=>{ load(); }, [metric, days, useMock]);
 
   const config = {
     data: data.map(d=>({ day: d.name, value: d.value })),
@@ -48,12 +77,12 @@ export default function Panel({ defaultMetric, days = 7 }: PanelProps){
   } as any;
 
   return (
-    <div className="p-4 rounded-lg bg-white border border-zinc-100 shadow-sm flex flex-col gap-3">
+    <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-[0_10px_25px_rgba(15,23,42,0.06)] flex flex-col gap-4 transition-all hover:shadow-[0_14px_35px_rgba(37,99,235,0.12)]">
       <div className="flex items-center gap-2">
         <Select size="small" value={metric} options={metricOptions} onChange={setMetric} className="w-44" />
         <span className="text-xs text-zinc-500">过去 {days} 天</span>
       </div>
-      <div className="flex-1 min-h-[180px]">
+      <div className="flex-1 min-h-[180px] rounded-xl border border-slate-100 p-2 bg-gradient-to-b from-white to-slate-50/60">
         {loading ? <div className="flex justify-center items-center h-full"><Spin /></div> : <LinePlot {...config} />}
       </div>
     </div>

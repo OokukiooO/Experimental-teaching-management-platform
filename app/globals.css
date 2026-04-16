@@ -1,6 +1,118 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+ 
+:root {
+  --ui-bg: #f3f7ff;
+  --ui-text: #0f172a;
+  --ui-muted: #475569;
+  --ui-border: #e2e8f0;
+  --ui-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+  --ui-shadow-soft: 0 6px 20px rgba(37, 99, 235, 0.08);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+.ui-body {
+  color: var(--ui-text);
+  background: radial-gradient(circle at 12% 10%, rgba(37, 99, 235, 0.1), transparent 36%),
+    radial-gradient(circle at 88% 0%, rgba(6, 182, 212, 0.08), transparent 32%),
+    var(--ui-bg);
+}
+
+.app-shell-card {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--ui-shadow-soft);
+  border-radius: 14px;
+}
+
+.ui-surface {
+  border: 1px solid var(--ui-border);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: var(--ui-shadow-soft);
+}
+
+.ui-title {
+  letter-spacing: 0.02em;
+}
+
+.ant-card {
+  border-color: var(--ui-border) !important;
+  box-shadow: var(--ui-shadow-soft);
+}
+
+.ant-btn {
+  transition: all .2s ease;
+}
+
+.ant-btn:hover {
+  transform: translateY(-1px);
+}
+
+.ant-input,
+.ant-select-selector,
+.ant-picker,
+.ant-input-affix-wrapper {
+  border-color: #dbe3ef !important;
+}
+
+.ant-table-wrapper .ant-table {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ant-table-wrapper .ant-table-thead>tr>th {
+  background: #f8fbff;
+  color: #334155;
+  font-weight: 600;
+}
+
+.ant-menu {
+  background: transparent !important;
+}
+
+.ant-menu-item,
+.ant-menu-submenu-title {
+  border-radius: 10px !important;
+  margin-inline: 8px !important;
+  width: calc(100% - 16px) !important;
+  transition: all .2s ease;
+}
+
+.ant-menu-item-selected {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.14), rgba(14, 165, 233, 0.1)) !important;
+}
+
+.ant-alert {
+  border-radius: 12px;
+}
+
+.pro-table-modern .ant-pro-card,
+.pro-table-modern .ant-card {
+  border-radius: 14px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06) !important;
+}
+
+.pro-table-modern .ant-table-tbody > tr {
+  transition: background-color .2s ease;
+}
+
+.pro-table-modern .ant-table-tbody > tr:hover > td {
+  background: #f8fbff !important;
+}
+
+.site-tree-search-value {
+  color: #2563eb;
+  font-weight: 600;
+}
 /* 
 :root {
   --foreground-rgb: 0, 0, 0;

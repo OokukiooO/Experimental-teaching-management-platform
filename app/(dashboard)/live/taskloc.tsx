@@ -150,8 +150,9 @@ const Taskloc: React.FC = () => {
     }, [searchValue]);
 
     return (
-        <div>
-            <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={onChange} />
+        <div className='space-y-3'>
+            <div className='text-sm font-semibold text-slate-700'>区域与摄像头</div>
+            <Search style={{ marginBottom: 8 }} placeholder="搜索摄像头" onChange={onChange} />
             <Tree
                 onExpand={onExpand}
                 expandedKeys={expandedKeys}

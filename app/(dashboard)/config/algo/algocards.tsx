@@ -30,7 +30,7 @@ export default function AlgoCards({ initial }: { initial:any[] }){
           const color = n.status==='online'?'#16a34a':n.status==='degraded'?'#f59e0b':'#ef4444';
           const gpuPct = n.gpuMemTotal? Math.round(100*(n.gpuMemUsed||0)/(n.gpuMemTotal||1)) : 0;
           return (
-            <Card key={n._id} className="border-zinc-100">
+            <Card key={n._id} className="border-slate-200 rounded-2xl transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(37,99,235,0.12)] bg-gradient-to-b from-white to-slate-50/60">
               <div className="flex items-center justify-between mb-2">
                 <div className="font-medium">{n.name}</div>
                 <Badge color={color} text={n.status||'unknown'} />

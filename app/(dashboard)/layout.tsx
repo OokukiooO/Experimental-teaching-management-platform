@@ -20,21 +20,26 @@ const App: React.FC = async ({ children }: React.PropsWithChildren) => {
 
     const user = await getUserFromRequest();
     return (
-        <div className='h-screen overflow-hidden'>
-            <div className='top-0 left-0 h-14 w-screen bg-white z-1 flex flex-row content-center justify-between pr-6'>
-                <div className='flex flex-row'>
-                    <img src='/gdut.png' className='h-[73%] relative top-3 left-4' alt='GDUT' />
+        <div className='h-screen overflow-hidden bg-transparent'>
+            <div className='top-0 left-0 h-16 w-screen bg-white/90 backdrop-blur border-b border-slate-200 z-10 flex flex-row content-center justify-between px-6'>
+                <div className='flex flex-row items-center'>
+                    <div className='flex items-center gap-2'>
+                        <span className='inline-block h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 shadow-md shadow-blue-200' />
+                        <span className='ui-title text-base font-semibold tracking-wide text-slate-700'>实验教学管理平台</span>
+                    </div>
                 </div>
                 <div className='flex items-center'>
                     <UserMenu user={user} />
                 </div>
             </div>
-            <div className="grid grid-cols-10 gap-0 h-full bg-gray">
-                <div className="col-span-2">
-                    <Menu />
+            <div className="grid grid-cols-10 gap-6 h-[calc(100%-64px)] bg-transparent p-6">
+                <div className="col-span-2 app-shell-card overflow-hidden">
+                    <div className='h-full py-3'>
+                        <Menu />
+                    </div>
                 </div>
-                <div className="col-span-8 overflow-scroll pb-20">
-                    <div className='m-8'>
+                <div className="col-span-8 overflow-scroll pb-20 app-shell-card">
+                    <div className='m-6'>
                         {children}
                     </div>
                 </div>

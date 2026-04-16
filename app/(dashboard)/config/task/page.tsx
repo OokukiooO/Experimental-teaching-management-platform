@@ -27,9 +27,15 @@ export default function TaskPage() {
     }
 
     return (
-        <>
+        <div className='space-y-4'>
+            <div className='ui-surface p-5'>
+                <h1 className='ui-title text-xl font-semibold text-slate-800'>任务管理</h1>
+                <p className='mt-1 text-sm text-slate-500'>创建并维护检测任务，支持检索、分页与编辑入口。</p>
+            </div>
             <TaskModal isModalOpen={isModalOpen} handleOk={closeModal} handleCancel={closeModal} mode={modalMode}></TaskModal>
-            <TaskTable showModal={showModal} setModalInfo={setModalInfo} setModalMode={setModalMode}></TaskTable>
-        </>
+            <div className='ui-surface p-3'>
+                <TaskTable showModal={showModal} setModalInfo={setModalInfo} setModalMode={setModalMode}></TaskTable>
+            </div>
+        </div>
     )
 }

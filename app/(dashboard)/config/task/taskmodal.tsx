@@ -58,6 +58,7 @@ export default function TaskModal({ isModalOpen, handleOk, handleCancel, mode }:
                     name="control-hooks"
                     onFinish={onFinish}
                     style={{ maxWidth: 600 }}
+                    className='pt-2'
                 >
                     <Form.Item name="note" label="任务名称" rules={[{ required: true }]}>
                         <Input />
@@ -84,7 +85,7 @@ export default function TaskModal({ isModalOpen, handleOk, handleCancel, mode }:
                         }
                     </Form.Item>
                     <Form.Item {...tailLayout}>
-                        <Space>
+                        <Space size="middle">
                             <Button type="primary" htmlType="submit">
                                 Submit
                             </Button>

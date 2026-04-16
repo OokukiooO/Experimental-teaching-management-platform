@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { qfChat } from '@/lib/qianfan';
-import dbConnect from '@/lib/dbconn';
-
-// 确保数据库连接在首次导入时建立
-await dbConnect();
 
 export async function POST(req: NextRequest){
   try{
@@ -12,6 +8,8 @@ export async function POST(req: NextRequest){
     const result = await qfChat({ messages });
     return NextResponse.json({ reply: result.reply });
   }catch(e:any){
-    return NextResponse.json({ error: e.message || '调用失败' }, { status: 500 });
+    const raw = e?.message ?? e?.error ?? e;
+    const errorText = typeof raw === 'string' ? raw : JSON.stringify(raw);
+    return NextResponse.json({ error: errorText || '调用失败' }, { status: 500 });
   }
 }

@@ -78,7 +78,7 @@ export async function ensureDefaultAdmin() {
   await dbConnect();
   const existing = await User.findOne({ name: 'admin' });
   if (existing) return existing;
-  const passwordHash = await hashPassword('syjxb_GDUT');
+  const passwordHash = await hashPassword('admin123');
   const user = await User.create({ name: 'admin', passwordHash, role: 'admin' });
   return user;
 }

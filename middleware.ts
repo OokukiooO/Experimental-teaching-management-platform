@@ -8,6 +8,7 @@ const PROTECTED_PREFIX = [
   '/(dashboard)/live',
   '/(dashboard)/config',
   '/(dashboard)/assistant',
+  '/(dashboard)/profile',
 ];
 
 export function middleware(req: NextRequest) {
@@ -32,5 +33,6 @@ export const config = {
     '/live/:path*',
     '/config/:path*',
   '/assistant/:path*',
+  '/profile/:path*',
   ],
 };

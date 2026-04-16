@@ -12,13 +12,13 @@ export default function CameraDetail(){
   },[])
 
   if(!cam){
-    return <div className="bg-white rounded-lg border border-zinc-100 p-6 text-zinc-500">选择左侧摄像头查看详情</div>
+    return <div className="bg-white rounded-2xl border border-slate-200 p-6 text-slate-500 shadow-[0_10px_25px_rgba(15,23,42,0.06)]">选择左侧摄像头查看详情</div>
   }
 
   return (
-    <div className="bg-white rounded-lg border border-zinc-100 p-4">
+    <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-[0_10px_25px_rgba(15,23,42,0.06)]">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="font-semibold">{cam.name}</h2>
+        <h2 className="font-semibold text-slate-800">{cam.name}</h2>
         <Space>
           <Button size="small" onClick={()=>{ navigator.clipboard.writeText(cam.streamUri); message.success('已复制流地址'); }}>复制流地址</Button>
           <Button size="small" type="primary" onClick={async ()=>{

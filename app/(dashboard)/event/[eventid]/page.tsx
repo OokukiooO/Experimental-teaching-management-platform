@@ -1,8 +1,9 @@
-import { Badge, Descriptions, Button, DescriptionsProps, Tag } from 'antd';
+import { Badge, Descriptions, Button, DescriptionsProps, Tag, Alert } from 'antd';
 import { event } from '@/models/event';
 import { getEvents } from '@/app/actions/event'
 import ErrorMessage from '@/components/ErrorMessage';
 import { Types } from 'mongoose';
+import { mockEvents, toBadgeStatus, toStateText } from '@/lib/mockEventData';
 
 export default async function EventPage({ params: { eventid } }: { params: { eventid: string } }) {
     // ObjectId 格式校验
@@ -10,96 +11,67 @@ export default async function EventPage({ params: { eventid } }: { params: { eve
         return <ErrorMessage title="事件ID无效" detail={`提供的参数: ${eventid}`} suggestion="请检查链接或从列表页重新进入。" />
     }
 
-    // 无数据库时友好提示
-    if (!process.env.MONGODB_URI) {
-        return <ErrorMessage title="数据源未配置" detail="未检测到 MONGODB_URI，无法查询事件。" suggestion="复制 .env.local.example 为 .env.local 并填写有效 MongoDB 连接串后重启服务。" />
+    let eventData: any = null;
+    let usedMock = false;
+    try {
+        if (process.env.MONGODB_URI) {
+            const events: event[] = JSON.parse(await getEvents(eventid));
+            if (events && events.length > 0) {
+                eventData = events[0] as any;
+            }
+        }
+    } catch {
+        // fallback below
     }
 
-    let events: event[] = [];
-    try {
-        events = JSON.parse(await getEvents(eventid));
-        if (!events || events.length === 0) {
+    if (!eventData) {
+        const found = mockEvents.find((it) => it._id === eventid) || mockEvents[0];
+        if (!found) {
             return <ErrorMessage title="未找到事件" detail={`ID: ${eventid}`} suggestion="可能已被删除或尚未生成。" />
         }
-    } catch (e: any) {
-        return <ErrorMessage title="查询事件失败" detail={e?.message} suggestion="稍后重试或检查数据库连接。" />
+        eventData = found;
+        usedMock = true;
     }
-    events.map((item, index) => {
-        switch (item.state) {
-            case 'pending':
-                item.state = '等待处理';
-                break;
-            case 'finish':
-                item.state = '已解决';
-                break;
-            case 'uploaded':
-                item.state = '已自动上报';
-                break;
-        }
-        item.labels.map((label, index) => {
-            // @ts-ignore
-            item.labels[index] = <Tag color={label.color} key={label.name}>{label.name}</Tag>
-        })
-    })
 
-    const event: any = events[0]
+    const labels = (eventData?.labels || []).map((label: any) => (
+        <Tag color={label.color} key={label.name}>{label.name}</Tag>
+    ));
 
-    // const [event, setEvent] = useState<any>()
-
-    // useEffect(() => {
-    //     fetch(`/api/event?eventid=${eventid}`)
-    //         .then(res => res.json())
-    //         .then(res => {
-    //             const events: event[] = res.data.events;
-    //             events.map((item, index) => {
-    //                 switch (item.state) {
-    //                     case 'pending':
-    //                         item.state = '等待处理';
-    //                         break;
-    //                     case 'finish':
-    //                         item.state = '已解决';
-    //                         break;
-    //                     case 'uploaded':
-    //                         item.state = '已自动上报';
-    //                         break;
-    //                 }
-    //                 item.labels.map((label, index) => {
-    //                     //@ts-ignore
-    //                     item.labels[index] = <Tag color={label.color} key={label.name}>{label.name}</Tag>
-    //                 })
-    //             })
-    //             setEvent(events[0])
-    //         })
-    // }, [])
+    const picName = String(eventData?.picsNames?.[0] || '');
+    const pic = picName
+        ? (picName.startsWith('http')
+            ? picName
+            : (picName.startsWith('/') ? picName : `/resources/${picName}`))
+        : '/event-snapshot.svg';
 
     const items: DescriptionsProps['items'] = [
         {
             label: '事件处理状态',
-            children: <Badge status="processing" text={event?.state} />,
+            children: <Badge status={toBadgeStatus(eventData?.state)} text={toStateText(eventData?.state)} />,
             span: 1,
         },
         {
             label: '识别时间',
-            children: new Date(event?.reportDate).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+            children: new Date(eventData?.reportDate).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }),
             span: 2,
         },
         {
             label: '任务名称',
-            children: event?.taskId.taskName,
+            children: eventData?.taskId?.taskName || '未命名任务',
         },
         {
             label: '摄像头名称',
-            children: event?.taskId.taskName,   //
+            children: eventData?.cameraName || eventData?.taskId?.taskName || '未配置',
         },
         {
             label: '摄像头位置',
-            children: event?.locationName,
+            children: eventData?.locationName || '未配置',
         },
 
         {
             span: 2,
             label: '检测信息',
-            children: event?.labels
+            children: labels
         },
         {
             span: 1,
@@ -109,18 +81,27 @@ export default async function EventPage({ params: { eventid } }: { params: { eve
     ];
 
     return (
-        <>
-            <div className='grid grid-cols-12 gap-5 mb-5'>
-                <div className='col-span-9'>
-                    <img src={`/resources/${event?.picsNames[0]}`}></img>
+        <div className='space-y-5'>
+            {usedMock && (
+                <Alert type="info" showIcon message="当前展示为演示数据" description="未命中数据库记录时，系统会自动回退到伪数据，便于页面演示。" />
+            )}
+            <div className='grid grid-cols-12 gap-5 mb-1'>
+                <div className='col-span-12 lg:col-span-9 ui-surface p-3'>
+                    <img src={pic} className='w-full rounded-lg'></img>
                     {/* <video className='aspect-video' autoPlay controls={false} loop>
                         <source src={`/resources/${event?.picsNames[0]}`} type="video/mp4" />
                     </video> */}
                 </div>
-                <div className='col-span-3'>
+                <div className='col-span-12 lg:col-span-3 ui-surface p-4'>
+                    <div className='text-sm text-slate-500'>事件资源预览与异常提示</div>
+                    <div className='mt-2 text-xs text-slate-400 leading-6'>
+                        支持场景：ID 无效、查询失败、事件不存在。异常时将给出清晰提示信息。
+                    </div>
                 </div>
             </div>
-            <Descriptions title="事件信息" bordered items={items} />
-        </>
+            <div className='ui-surface p-3'>
+              <Descriptions title={<span className='text-slate-800 font-semibold'>事件信息</span>} bordered items={items} className='rounded-xl overflow-hidden' />
+            </div>
+        </div>
     )
 }

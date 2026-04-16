@@ -1,3 +1,10 @@
+/*
+ * @Description: 
+ * @Date: 2025-11-14 17:32:35
+ * @LastEditTime: 2026-04-03 21:33:55
+ * @FilePath: \Experimental-teaching-management-platform\app\api\auth\captcha\route.ts
+ */
+
 import { NextResponse } from 'next/server';
 import { generateCaptcha } from '@/lib/auth';
 
