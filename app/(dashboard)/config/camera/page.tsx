@@ -4,6 +4,8 @@ import CameraList from './cameralist';
 import CameraDetail from './cameradetail';
 import CameraModal from './cameramodal';
 
+export const dynamic = 'force-dynamic';
+
 export default async function CameraPage(){
   const initial = JSON.parse(await listCameras());
   return (

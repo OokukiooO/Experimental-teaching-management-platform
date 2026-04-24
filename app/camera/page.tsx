@@ -1,11 +1,15 @@
 'use client';
 
 import { Alert, Card, Col, Row, Space } from 'antd';
-import { Line } from '@ant-design/charts';
+import dynamic from 'next/dynamic';
 import CameraCanvasBoard from './components/CameraCanvasBoard';
 import CameraControlPanel from './components/CameraControlPanel';
 import { useCameraCanvas } from './hooks/useCameraCanvas';
 import { useCameraSimulation } from './hooks/useCameraSimulation';
+
+const Line = dynamic(() => import('@ant-design/charts').then((mod) => mod.Line), {
+  ssr: false,
+});
 
 export default function CameraPage() {
   const {

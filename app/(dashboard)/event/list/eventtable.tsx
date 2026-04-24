@@ -5,7 +5,7 @@ import type { ProTableProps } from '@ant-design/pro-components';
 import { TableDropdown } from '@ant-design/pro-components';
 import { message, Space, Tag } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { event } from '@/models/event'
+import { event, label } from '@/models/event'
 import { task } from '@/models/task';
 import { mockEvents } from '@/lib/mockEventData';
 
@@ -64,7 +64,7 @@ const columns: ProColumns<any>[] = [
         search: false,
         render: (_, record) => (
             <Space>
-                {record.labels.map(({ name, color }) => (
+                {record.labels.map(({ name, color }: label) => (
                     <Tag color={color} key={name}>
                         {name}
                     </Tag>
@@ -228,7 +228,7 @@ export default () => {
                     location.href = `/event/${record._id}`;
                 }
             })}
-            postData={(data) => {
+            postData={(data: event[]) => {
                 if (!Array.isArray(data)) return data;
                 return data.map((it) => ({ ...it }));
             }}

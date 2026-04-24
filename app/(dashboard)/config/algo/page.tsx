@@ -3,6 +3,8 @@ import { listAlgoNodes } from '@/app/actions/algo';
 import AlgoCards from './algocards';
 import AlgoModal from './algomodal';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AlgoPage(){
   const initial = JSON.parse(await listAlgoNodes());
   return (
